@@ -264,8 +264,13 @@ function template_main()
                             if ($topic['is_posted_in'])
                               echo '<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#ThreadYouPosted"></use>';
                           echo '</svg>
-					</td>
-					<td class="subject ', $alternate_class, '">
+					</td>';
+            
+            /*
+            * Start link rewrite - @kiwithing
+            */
+            
+			echo '<td class="subject ', $alternate_class, '">
 						<div ', (!empty($topic['quick_mod']['modify']) ? 'id="topic_' . $topic['first_post']['id'] . '" onmouseout="mouse_on_div = 0;" onmouseover="mouse_on_div = 1;" ondblclick="modify_topic(\'' . $topic['id'] . '\', \'' . $topic['first_post']['id'] . '\');"' : ''), '>
 							', $topic['is_sticky'] ? '<strong>' : '', '<span id="msg_' . $topic['first_post']['id'] . '">', $topic['first_post']['link'], (!$context['can_approve_posts'] && !$topic['approved'] ? '&nbsp;<em>(' . $txt['awaiting_approval'] . ')</em>' : ''), '</span>', $topic['is_sticky'] ? '</strong>' : '';
 
@@ -274,14 +279,46 @@ function template_main()
 					echo '
 							<a href="', $topic['new_href'], '" class="jump-to-new subject-level" id="newicon' . $topic['first_post']['id'] . '">
                                      <svg viewBox="0 0 32 32" ><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#PostNewOnes"></use></svg>
-                                   </a>';
-			echo '
+                                   </a>
 							<p>', $txt['started_by'], ' ', $topic['first_post']['member']['link'], '
 								<small id="pages' . $topic['first_post']['id'] . '">', $topic['pages'], '</small>
 							</p>
 						</div>
-					</td>
-					<td class="stats ', $color_class, '">
+					</td>';
+            
+            $subjectLinkHtml = '';
+            $creatorLinkHtml = '';
+            
+            //Build title link
+            $subjectLinkHtml = '<div class="title">' .
+                '<a href="http://ballp.it/index.php?topic=1703.msg50303#new" class="jump-to-new subject-level" id="newicon50194">' .
+                '<svg viewBox="0 0 32 32"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#PostNewOnes"></use></svg></a>' .
+                '<a class="thread-title" href="http://ballp.it/index.php?topic=1703.0">First times watching classic movies</a>' .
+                '</div>';
+                    
+            $creatorLinkHtml = '<div class="creator-and-pagination">' .
+                '<span class="creator">Started by <a href="http://ballp.it/index.php?action=profile;u=19" title="View the profile of jack chick">jack chick</a></span>' .
+                '<span class="pagination">' .
+                '« <a class="navPages" href="http://ballp.it/index.php?topic=1703.0">1</a> <a class="navPages" href="http://ballp.it/index.php?topic=1703.15">2</a>  »' .
+                '</span>' .
+                '</div>';
+            
+            echo '<td class="subject '. $alternate_class .'">';
+            echo $subjectLinkHtml; //Title link
+            
+            // Is this topic new? (assuming they are logged in!)
+			if ($topic['new'] && $context['user']['is_logged']) {
+             echo $creatorLinkHtml; //Creator + pagination links   
+            }
+            echo '</td>';
+            
+            /*
+            * End link rewrite - @kiwithing
+            */
+            
+                    
+                    
+            echo	'<td class="stats ', $color_class, '">
 						', $topic['replies'], ' ', $txt['replies'], '
 						<br />
 						', $topic['views'], ' ', $txt['views'], '
